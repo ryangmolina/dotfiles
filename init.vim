@@ -20,18 +20,18 @@ call vundle#begin()
   Plugin 'rosenfeld/conque-term'               " Consoles as buffers
   Plugin 'ddrscott/vim-side-search'
   Plugin 'majutsushi/tagbar'
-  Plugin 'Yggdroot/indentLine'
-
+  "Plugin 'Yggdroot/indentLine'
+  Plugin 'vim-airline/vim-airline'
+  Plugin 'vim-airline/vim-airline-themes'
 
     "-------------------=== Languages support ===-------------------
   Plugin 'mitsuhiko/vim-sparkup'              " Sparkup(XML/jinja/htlm-django/etc.) support
-  Plugin 'vim-syntastic/syntastic'               " Syntax checking plugin for Vim
   Plugin 'posva/vim-vue'
   Plugin 'othree/html5.vim'
   Plugin 'pangloss/vim-javascript'
   Plugin 'mxw/vim-jsx'
   Plugin 'vim-scripts/indentpython.vim'
-  Plugin 'nvie/vim-flake8'
+  Plugin 'w0rp/ale'
 
     "-------------------=== Colorscheme ===-------------------
   Plugin 'rafi/awesome-vim-colorschemes'
@@ -172,30 +172,7 @@ let NERDTreeWinSize=40
 autocmd VimEnter * if !argc() | NERDTree | endif  " Load NERDTree only if vim is run without arguments
 nmap " :NERDTreeToggle<CR>
 
-" python executables for different plugins
-let g:syntastic_python_python_exec='python'
-
-" syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_auto_loc_list=1
-let g:syntastic_enable_signs=1
-let g:syntastic_check_on_wq=0
-let g:syntastic_aggregate_errors=1
-let g:syntastic_loc_list_height=5
-let g:syntastic_error_symbol='X'
-let g:syntastic_style_error_symbol='X'
-let g:syntastic_warning_symbol='x'
-let g:syntastic_style_warning_symbol='x'
-let g:syntastic_python_checkers=['python', 'pylint']
-let g:syntastic_python_pylint_args = "--load-plugins pylint_django"
-let g:syntastic_python_pylint_args = '-E'
-let g:syntastic_javascript_checkers = ['eslint']
-
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
-
 let g:ctrlp_custom_ignore = '\v[\/](**node_modules|**target|**dist|**webpack|**venv)|(\.(swp|ico|git|svn))$'
 
 let g:vue_disable_pre_processors = 1
@@ -242,3 +219,30 @@ nnoremap H gT
 nnoremap L gt
 tnoremap <Esc> <C-\><C-n>
 
+
+" " Equivalent to the above.
+let g:ale_fixers = {'javascript': ['eslint']}
+let g:ale_fix_on_save = 1
+let b:ale_fixers = {'javascript': ['eslint']}
+let g:ale_linters = {'javascript': ['eslint'], 'python': ['flake8']}
+
+
+let g:ale_fixers = {
+  \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+  \ 'javascript': ['eslint'],
+  \}
+
+let g:ale_cache_executable_check_failures = 1
+let g:ale_virtualenv_dir_names = []
+
+let g:airline#extensions#ale#enabled = 1
+
+"let g:ale_lint_on_save = 1
+let g:ale_open_list = 1
+let g:ale_list_window_size = 5
+
+" Write this in your vimrc file
+"let g:ale_lint_on_text_changed = 'never'
+" You can disable this option too
+" if you don't want linters to run on opening a file
+"let g:ale_lint_on_enter = 0
