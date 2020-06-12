@@ -32,6 +32,12 @@ call vundle#begin()
   Plugin 'mxw/vim-jsx'
   Plugin 'vim-scripts/indentpython.vim'
   Plugin 'w0rp/ale'
+  Plugin 'lepture/vim-jinja'
+  Plugin 'psf/black'
+  Plugin 'leafgarland/typescript-vim'
+  Plugin 'vim-jsx-typescript'
+  Plugin 'sheerun/vim-polyglot'
+  Plugin 'numirias/semshi'
 
     "-------------------=== Colorscheme ===-------------------
   Plugin 'rafi/awesome-vim-colorschemes'
@@ -40,8 +46,14 @@ call vundle#begin()
   Plugin 'chriskempson/base16-vim'
   Plugin 'NLKNguyen/papercolor-theme'
   Plugin 'mhartington/oceanic-next'
+  Plugin 'rakr/vim-one'
+  Plugin 'gko/vim-coloresque'
 
 call vundle#end()                           " required
+
+" let g:python2_host_prog = '/usr/bin/python'
+let g:python3_host_prog = '/usr/bin/python3'
+
 filetype on
 filetype plugin on
 filetype plugin indent on
@@ -66,8 +78,8 @@ syntax enable                               " syntax highlight
 set t_Co=256                                " set 256 colors
 set termguicolors                           " set true colors inside tmux
 let base16colorspace=256                   " Access colors present in 256 colorspace
-set background=dark
-colorscheme gruvbox
+set background=light
+colorscheme PaperColor
 
 " Search settings
 set incsearch                               " incremental search
@@ -141,8 +153,11 @@ au BufNewFile,BufRead *.vue setf vue
 au FileType vue setl sw=2 sts=2 et
 au FileType css setl sw=2 sts=2 et
 au FileType js setl sw=2 sts=2 et
+au FileType json setl sw=2 sts=2 et
 au FileType javascript setl sw=2 sts=2 et
 au FileType html setl sw=2 sts=2 et
+au FileType typescript.tsx setl sw=2 sts=2 et
+au FileType typescript setl sw=2 sts=2 et
 
 au BufNewFile,BufRead *.py
   \ set tabstop=4 |
@@ -157,11 +172,11 @@ au BufNewFile,BufRead *.py
 " highlight 'long' lines (>= 80 symbols) in python files
 augroup vimrc_autocmds
   autocmd!
-  autocmd FileType python,rst,c,cpp highlight Excess ctermbg=DarkGrey guibg=Orange
-  autocmd FileType python,rst,c,cpp match Excess /\%81v.*/
+  autocmd FileType python,rst,c,cpp highlight Excess ctermbg=DarkGrey
+  autocmd FileType python,rst,c,cpp match Excess /\%90v.*/
   autocmd FileType python,rst,c,cpp set nowrap
   autocmd FileType python,rst,c,cpp set colorcolumn=80
-  autocmd FileType js,javascript set tabstop=2
+  autocmd FileType js,javascript,json set tabstop=2
 augroup END
 
 "=====================================================
@@ -169,6 +184,7 @@ augroup END
 "=====================================================
 let NERDTreeIgnore=['\.pyc$', '\.pyo$', '__pycache__$', 'venv', 'node_modules']     " Ignore files in NERDTree
 let NERDTreeWinSize=40
+let NERDTreeShowHidden=1
 autocmd VimEnter * if !argc() | NERDTree | endif  " Load NERDTree only if vim is run without arguments
 nmap " :NERDTreeToggle<CR>
 
@@ -224,20 +240,28 @@ tnoremap <Esc> <C-\><C-n>
 let g:ale_fixers = {'javascript': ['eslint']}
 let g:ale_fix_on_save = 1
 let b:ale_fixers = {'javascript': ['eslint']}
-let g:ale_linters = {'javascript': ['eslint'], 'python': ['flake8']}
+let g:ale_linters = {
+  \ 'javascript': ['eslint'],
+  \ 'python': ['flake8', 'black'],
+  \ 'typescript': ['tsserver', 'tslint'],
+  \ 'vue': ['eslint'],
+\}
 
 
 let g:ale_fixers = {
   \ '*': ['remove_trailing_lines', 'trim_whitespace'],
+  \ 'typescript': ['prettier'],
   \ 'javascript': ['eslint'],
-  \}
+  \ 'scss': ['prettier'],
+  \ 'html': ['prettier'],
+\}
 
 let g:ale_cache_executable_check_failures = 1
 let g:ale_virtualenv_dir_names = []
 
 let g:airline#extensions#ale#enabled = 1
 
-"let g:ale_lint_on_save = 1
+" let g:ale_lint_on_save = 1
 let g:ale_open_list = 1
 let g:ale_list_window_size = 5
 
@@ -246,3 +270,36 @@ let g:ale_list_window_size = 5
 " You can disable this option too
 " if you don't want linters to run on opening a file
 "let g:ale_lint_on_enter = 0
+
+autocmd BufWritePre *.py execute ':Black'
+
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript.tsx
+autocmd FileType typescript setlocal formatprg=prettier\ --parser\ typescript
+
+
+hi semshiLocal           ctermfg=209 guifg=#ff875f
+" Dark ver
+"hi semshiGlobal          ctermfg=214 guifg=#ffaf00
+"hi semshiImported        ctermfg=214 guifg=#ffaf00 cterm=bold gui=bold
+"hi semshiParameter       ctermfg=75  guifg=#5fafff
+"hi semshiParameterUnused ctermfg=117 guifg=#87d7ff cterm=underline gui=underline
+"hi semshiFree            ctermfg=218 guifg=#ffafd7
+"hi semshiBuiltin         ctermfg=207 guifg=#ff5fff
+"hi semshiAttribute       ctermfg=49  guifg=#00ffaf
+"hi semshiUnresolved      ctermfg=226 guifg=#ffff00 cterm=underline gui=underline
+
+" Light ver
+hi semshiGlobal          ctermfg=214 guifg=#cc4f00
+hi semshiImported        ctermfg=214 guifg=#cc4f00 cterm=bold gui=bold
+hi semshiParameter       ctermfg=75  guifg=#005f87
+hi semshiParameterUnused ctermfg=117 guifg=#5fafff cterm=underline gui=underline
+hi semshiFree            ctermfg=218 guifg=#ffafd7
+hi semshiBuiltin         ctermfg=207 guifg=#8700af
+hi semshiAttribute       ctermfg=49  guifg=#008700
+hi semshiSelf            ctermfg=249 guifg=#5f8700
+hi semshiUnresolved      ctermfg=226 guifg=#878787 cterm=underline gui=underline
+hi semshiSelected        ctermfg=231 guifg=#ffffff ctermbg=161 guibg=#d7005f
+
+hi semshiErrorSign       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#d70000
+hi semshiErrorChar       ctermfg=231 guifg=#ffffff ctermbg=160 guibg=#d70000
+sign define semshiError text=E> texthl=semshiErrorSign
